@@ -6,7 +6,6 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <time.h>
-#include <string.h>
 
 #define BUFFER_SIZE 1024
 #define throw_error(...) { fprintf(stderr, __VA_ARGS__); fflush(stderr); exit(1); }
