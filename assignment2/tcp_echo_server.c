@@ -8,10 +8,12 @@
 #include <time.h>
 
 #define BUFFER_SIZE 1024
-#define throw_error(...) { fprintf(stderr, __VA_ARGS__); fflush(stderr); exit(1); }
 
 int main (int argc, char *argv[]) {
-  if (argc < 2) throw_error("Usage: %s [port]\n", argv[0]);
+  if (argc < 2) {
+    printf("Usage: %s [port]\n", argv[0]);
+    return 1;
+  }
 
   int port = atoi(argv[1]);
   int server_fd, client_fd, err;
@@ -20,7 +22,10 @@ int main (int argc, char *argv[]) {
 
   // Create socket
   server_fd = socket(AF_INET, SOCK_STREAM, 0);
-  if (server_fd < 0) throw_error("Could not create socket\n");
+  if (server_fd < 0) {
+    puts("Could not create socket\n");
+    return 1;
+  }
 
   // Prepare the sockaddr_in structure
   server.sin_family = AF_INET;
@@ -29,12 +34,17 @@ int main (int argc, char *argv[]) {
 
   // Bind socket
   err = bind(server_fd, (struct sockaddr *) &server, sizeof(server));
-  if (err < 0) throw_error("Could not bind socket\n");
+  if (err < 0) {
+    puts("Could not bind socket\n");
+    return 1;
+  }
 
   // Listen
   err = listen(server_fd, 128);
-  if (err < 0) throw_error("Could not listen on socket\n");
-
+  if (err < 0) {
+    puts("Could not listen on socket\n");
+    return 1;
+  }
   printf("Server is listening on port %d for incomming messages\n", port);
 
   // Create logfile an add the correct permissions
@@ -51,7 +61,8 @@ int main (int argc, char *argv[]) {
     client_fd = accept(server_fd, (struct sockaddr *) &client, &client_len);
 
     if (client_fd < 0) {
-      throw_error("Could not establish new connection\n");
+      puts("Could not establish new connection\n");
+      return 1;
     } else {
       // Write the time when the client connected into the logfile
       timestamp = time(0);
@@ -61,12 +72,13 @@ int main (int argc, char *argv[]) {
     }
 
     while (1) {
-      //Receive a message from client
+      // Receive a message from client
       int read = recv(client_fd, buf, BUFFER_SIZE, 0);
 
       if (!read) break; // done reading the message from the client
       if (read < 0) {
-        throw_error("Client read failed\n");
+        puts("Client read failed\n");
+        return 1;
       } else {
         // Write the message's content and the time the server was reveiving the message into the logfile
         timestamp = time(0);
@@ -74,9 +86,12 @@ int main (int argc, char *argv[]) {
         fprintf(logfile, "message received | content: \"%.*s\" | time: %s", read - 1, buf, ctime(&timestamp));
         fclose(logfile);
       }
-      //Send the message back to client
+      // Send the message back to client
       err = send(client_fd, buf, read, 0);
-      if (err < 0) throw_error("Client write failed\n");
+      if (err < 0) {
+        puts("Client write failed\n");
+        return 1;
+      }
     }
   }
 
