@@ -15,10 +15,12 @@ int main (int argc, char *argv[]) {
     return 1;
   }
 
-  int port;
-  port = atoi(argv[1]);
-  int server_fd, client_fd, err;
-  struct sockaddr_in server, client;
+  int port = atoi(argv[1]);
+  int server_fd;
+  int client_fd;
+  int err;
+  struct sockaddr_in server;
+  struct sockaddr_in client;
   char buf[BUFFER_SIZE];
 
   // Create socket
