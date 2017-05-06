@@ -10,16 +10,15 @@
 #define BUFFER_SIZE 1024
 
 int main (int argc, char *argv[]) {
-  int port, server_fd, client_fd, err;
-  struct sockaddr_in server, client;
-  char buf[BUFFER_SIZE];
-
   if (argc < 2) {
     printf("Usage: %s [port]\n", argv[0]);
     return 1;
   }
 
-  port = atoi(argv[1]);
+  int port = atoi(argv[1]);
+  int server_fd, client_fd, err;
+  struct sockaddr_in server, client;
+  char buf[BUFFER_SIZE];
 
   // Create socket
   server_fd = socket(AF_INET, SOCK_STREAM, 0);
