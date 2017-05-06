@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g
+CFLAGS = -g -Wall -Wextra -pedantic
 PROG = tcp_echo_server
 SRCS = tcp_echo_server.c
 OBJS = $(SRCS:.c=.o)
