@@ -15,7 +15,8 @@ int main (int argc, char *argv[]) {
     return 1;
   }
 
-  int port = atoi(argv[1]);
+  int port;
+  port = atoi(argv[1]);
   int server_fd, client_fd, err;
   struct sockaddr_in server, client;
   char buf[BUFFER_SIZE];
