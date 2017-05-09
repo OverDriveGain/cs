@@ -10,15 +10,18 @@
 #define BUFFER_SIZE 1024
 
 int main (int argc, char *argv[]) {
-  if (argc < 2) {
-    printf("Usage: %s [port]\n", argv[0]);
-    return 1;
-  }
-
   int port = atoi(argv[1]);
   int server_fd, client_fd, err;
   struct sockaddr_in server, client;
   char buf[BUFFER_SIZE];
+
+  time_t timestamp;
+  FILE * logfile;
+
+  if (argc < 2) {
+    printf("Usage: %s [port]\n", argv[0]);
+    return 1;
+  }
 
   // Create socket
   server_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -28,6 +31,7 @@ int main (int argc, char *argv[]) {
   }
 
   // Prepare the sockaddr_in structure
+  port = atoi(argv[1]);
   server.sin_family = AF_INET;
   server.sin_port = htons(port);
   server.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -48,12 +52,10 @@ int main (int argc, char *argv[]) {
   printf("Server is listening on port %d for incomming messages\n", port);
 
   // Create logfile an add the correct permissions
-  FILE * logfile;
   logfile = fopen("/var/log/ushoutd.log", "a");
   fclose(logfile);
   chmod("/var/log/ushoutd.log", 0600);
 
-  time_t timestamp;
   while (1) {
     socklen_t client_len = sizeof(client); // sizeof(struct sockaddr_in)
 
