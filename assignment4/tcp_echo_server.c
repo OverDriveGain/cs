@@ -5,7 +5,6 @@
 #include <sys/stat.h>
 #include <netinet/in.h>
 #include <unistd.h>
-
 #include <string.h>
 #include <arpa/inet.h>
 #include <errno.h>
@@ -15,12 +14,12 @@
 #include "ushout.h"
 
 #define BUFFER_SIZE 1024
-#define CLIENT_MAX    10
+#define CLIENT_MAX   100
 
 int main (int argc, char *argv[]) {
   int port, server_fd, client_fd, err, i;
   struct sockaddr_in server, client;
-  int client_fds[10], client_active;
+  int client_fds[CLIENT_MAX], client_active;
   socklen_t client_len;
   char buf[BUFFER_SIZE];
   fd_set read_fds;
@@ -136,7 +135,7 @@ int main (int argc, char *argv[]) {
       }
     }
 
-    /* Maybe there are IO operation on some other sockets */
+    /* Maybe there are IO operation on some other fds (sockets) */
     for (i = 0; i < CLIENT_MAX; i++) {
       client_fd = client_fds[i];
 
