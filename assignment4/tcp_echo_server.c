@@ -165,11 +165,10 @@ int main (int argc, char *argv[]) {
           log = fopen("/var/log/ushoutd.log","a");
           fprintf(log, "Message received | ip: %s | content: \"%.*s\" | time: %s", inet_ntoa(client.sin_addr), read-1, buf, ctime(&timestamp));
           fclose(log);
-          /* Send the message to all clients if there is one */
+          /* Send the message to all clients (except the sender) if there are clients connected */
           for (i = 0; i < max_fd; i++) {
-            client_fd = client_fds[i];
-            if (client_fd != 0) {
-              err = send(client_fd, buf, read, 0);
+            if (client_fds[i] != 0 && client_fds[i] != client_fd) {
+              err = send(client_fds[i], buf, read, 0);
               if (err < 0) {
                 puts("Send message back to client failed\n");
                 return 1;
