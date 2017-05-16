@@ -18,7 +18,7 @@
 #define CLIENT_MAX    10
 
 int main (int argc, char *argv[]) {
-  int port, server_fd, client_fd, err;
+  int port, server_fd, client_fd, err, i;
   struct sockaddr_in server, client;
   int client_fds[10], client_active;
   socklen_t client_len;
@@ -38,7 +38,7 @@ int main (int argc, char *argv[]) {
   log = mklog("/var/log/ushoutd.log");
 
   /* initialise each client_fds[1..CLIENT_MAX] with 0 so they are not checked */
-  for (int i = 0; i < CLIENT_MAX; i++) {
+  for (i = 0; i < CLIENT_MAX; i++) {
       client_fds[i] = 0;
   }
 
@@ -85,7 +85,7 @@ int main (int argc, char *argv[]) {
     max_fd = server_fd;
 
     /* adding child fds */
-    for (int i = 0; i < CLIENT_MAX; i++) {
+    for (i = 0; i < CLIENT_MAX; i++) {
       client_fd = client_fds[i];
 
       /* add valid client fd to read list */
@@ -127,7 +127,7 @@ int main (int argc, char *argv[]) {
         client_fd, inet_ntoa(client.sin_addr), ntohs(client.sin_port));
 
       /* adding new client fd to the fd set (client_fds) */
-      for (int i = 0; i < CLIENT_MAX; i++) {
+      for (i = 0; i < CLIENT_MAX; i++) {
         if (client_fds[i] == 0)
         {
           client_fds[i] = client_fd;
@@ -138,7 +138,7 @@ int main (int argc, char *argv[]) {
     }
 
     // Maybe there are IO operation on some other sockets */
-    for (int i = 0; i < CLIENT_MAX; i++) {
+    for (i = 0; i < CLIENT_MAX; i++) {
       client_fd = client_fds[i];
 
       if (FD_ISSET(client_fd, &read_fds)) {
@@ -166,7 +166,7 @@ int main (int argc, char *argv[]) {
           fprintf(log, "Message received | ip: %s | content: \"%.*s\" | time: %s", inet_ntoa(client.sin_addr), read-1, buf, ctime(&timestamp));
           fclose(log);
           /* Send the message to all clients if there is one */
-          for (int i = 0; i < max_fd; i++) {
+          for (i = 0; i < max_fd; i++) {
             client_fd = client_fds[i];
             if (client_fd != 0) {
               err = send(client_fd, buf, read, 0);
