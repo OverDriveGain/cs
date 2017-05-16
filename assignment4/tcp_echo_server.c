@@ -115,7 +115,7 @@ int main (int argc, char *argv[]) {
         puts("Could not establish new connection\n");
         return 1;
       }
-      printf("Client_fd: %i\n", client_fd);
+
       /* Write the time when the client connected and his ip address into the log */
       timestamp = time(0);
       log = fopen("/var/log/ushoutd.log", "a");
@@ -123,8 +123,8 @@ int main (int argc, char *argv[]) {
       fclose(log);
 
       //inform user of socket number - used in send and receive commands
-      printf("New connection | clients fd = %d | ip = %s , port = %d\n",
-        client_fd, inet_ntoa(client.sin_addr), ntohs(client.sin_port));
+      printf("New connection | client\'s fd = %d | ip = %s\n",
+        client_fd, inet_ntoa(client.sin_addr));
 
       /* adding new client fd to the fd set (client_fds) */
       for (i = 0; i < CLIENT_MAX; i++) {
@@ -149,7 +149,7 @@ int main (int argc, char *argv[]) {
           return 1;
         } else if (read == 0) { /* Client disconnected */
           getpeername(client_fd , (struct sockaddr*) &client, (socklen_t*) &client_len);
-          printf("Client disconnected | ip: %s | port: %d\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port));
+          printf("Client disconnected | ip: %s\n", inet_ntoa(client.sin_addr));
           /* Log the disconneted client */
           timestamp = time(0);
           log = fopen("/var/log/ushoutd.log","a");
@@ -179,8 +179,6 @@ int main (int argc, char *argv[]) {
         }
       }
     }
-
-    /*if (buf[0]) {}*/
   }
 
   return 0;
