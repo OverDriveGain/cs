@@ -122,7 +122,7 @@ int main (int argc, char *argv[]) {
       fprintf(log,"Client connected | ip: %s | time: %s", inet_ntoa(client.sin_addr), ctime(&timestamp));
       fclose(log);
 
-      //inform user of socket number - used in send and receive commands
+      /* print some informations about the newly connected client */
       printf("New connection | client\'s fd = %d | ip = %s\n",
         client_fd, inet_ntoa(client.sin_addr));
 
@@ -137,7 +137,7 @@ int main (int argc, char *argv[]) {
       }
     }
 
-    // Maybe there are IO operation on some other sockets */
+    /* Maybe there are IO operation on some other sockets */
     for (i = 0; i < CLIENT_MAX; i++) {
       client_fd = client_fds[i];
 
@@ -155,7 +155,7 @@ int main (int argc, char *argv[]) {
           log = fopen("/var/log/ushoutd.log","a");
           fprintf(log, "Client disconnected | ip: %s | time: %s", inet_ntoa(client.sin_addr), ctime(&timestamp));
           fclose(log);
-          //Close the socket and mark as 0 in list for reuse
+          /* Close the fd (socket) and set it to 0 in array for reuse */
           close(client_fd);
           client_fds[i] = 0;
         } else { /* received message from client */
