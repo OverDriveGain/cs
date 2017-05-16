@@ -25,7 +25,6 @@ int main (int argc, char *argv[]) {
   char buf[BUFFER_SIZE];
   fd_set read_fds;
   int max_fd;
-  char * message;
 
   time_t timestamp;
   FILE * log;
@@ -77,8 +76,9 @@ int main (int argc, char *argv[]) {
   client_len = sizeof(client); /* sizeof(struct sockaddr_in) */
 
   while (1) {
-    /* clear all fds in set */
+    /* clear all fds in set and the buffer (aka latest message) */
     FD_ZERO(&read_fds);
+    memset(buf,0,strlen(buf));
 
     /* adding server fd */
     FD_SET(server_fd, &read_fds);
@@ -156,7 +156,7 @@ int main (int argc, char *argv[]) {
           fprintf(log, "Client disconnected | ip: %s | time: %s", inet_ntoa(client.sin_addr), ctime(&timestamp));
           fclose(log);
           //Close the socket and mark as 0 in list for reuse
-          close( client_fd );
+          close(client_fd);
           client_fds[i] = 0;
         } else { /* received message from client */
           getpeername(client_fd , (struct sockaddr*) &client, (socklen_t*) &client_len);
@@ -165,15 +165,22 @@ int main (int argc, char *argv[]) {
           log = fopen("/var/log/ushoutd.log","a");
           fprintf(log, "Message received | ip: %s | content: \"%.*s\" | time: %s", inet_ntoa(client.sin_addr), read-1, buf, ctime(&timestamp));
           fclose(log);
-          /* Send the message back to client */
-          err = send(client_fd, buf, read, 0);
-          if (err < 0) {
-            puts("Send message back to client failed\n");
-            return 1;
+          /* Send the message to all clients if there is one */
+          for (int i = 0; i < max_fd; i++) {
+            client_fd = client_fds[i];
+            if (client_fd != 0) {
+              err = send(client_fd, buf, read, 0);
+              if (err < 0) {
+                puts("Send message back to client failed\n");
+                return 1;
+              }
+            }
           }
         }
       }
     }
+
+    /*if (buf[0]) {}*/
   }
 
   return 0;
