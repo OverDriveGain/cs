@@ -131,7 +131,6 @@ int main (int argc, char *argv[]) {
         if (client_fds[i] == 0)
         {
           client_fds[i] = client_fd;
-          printf("Adding to list of client fds as %d\n" , i);
           break;
         }
       }
